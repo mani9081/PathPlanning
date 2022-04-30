@@ -1,0 +1,251 @@
+import java.applet.Applet;
+import java.awt.Button;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+
+
+public class PathPlan extends Applet implements MouseListener,MouseMotionListener
+{
+	Button b,b1;
+	int k;
+	int start,startrobot;
+	point[] p;
+	int pointc;
+	Graphics g;
+	robot r;
+	double dist,dist1;
+	public void init()
+	{
+		
+		addMouseListener(this);
+		addMouseMotionListener(this);
+	    this.setSize(1300,600);
+	    r = new robot();
+		b = new Button("start");
+		add(b);
+		b.addMouseListener(this);
+		b.setBounds(1,2,50,50);
+		
+		b1 = new Button("startRobot");
+		add(b1);
+		b1.addMouseListener(this);
+		b1.setBounds(1,30,50,50);
+		
+		start=0;
+		startrobot=0;
+		p = new point[101];
+		for(int i=1;i<=100;i++)
+		{
+			p[i] = new point();
+		}
+		
+	
+
+	}
+	public void paint(Graphics g)
+	{
+		
+	   double slope; double deg;
+	   double x1,y1,x2,y2,xd,yd;
+	   double X1,X2,X3,X4,Y1,Y2,Y3,Y4;
+	   
+		for(int i=2;i<=pointc;i++)
+		{
+			
+			x1 = p[i-1].x; y1 = p[i-1].y;
+			x2 = p[i].x; y2 = p[i].y;
+			
+			g.drawLine((int)x1,(int)(600-y1),(int)x2,(int)(600-y2));
+			g.setColor(Color.BLACK);
+			if((x2-x1)!=0)
+			{
+			slope = (y2-y1)/(x2-x1);
+			
+			System.out.println("s1 "+(y2-y1));
+			System.out.println("s2 "+(x2-x1));
+		
+		
+			System.out.println("slope "+slope);
+			
+			deg= Math.atan(slope);
+			System.out.println("degree "+deg);
+			}
+			else
+			{
+				deg = 90;
+			}
+			
+			xd = Math.sin(deg)*40;
+			yd = Math.cos(deg)*40;
+			
+			x1 = x1-xd; y1 = y1+yd;
+			x2 = x2-xd; y2 = y2+yd;
+					
+			//g.drawLine((int)x1,(int)(600-y1),(int)x2,(int)(600-y2));
+			
+			x1 = p[i-1].x; y1 = p[i-1].y;
+			x2 = p[i].x; y2 = p[i].y;
+			
+			
+			x1 = x1+xd; y1 = y1-yd;
+			x2 = x2+xd; y2 = y2-yd;
+					
+			//g.drawLine((int)x1,(int)(600-y1),(int)x2,(int)(600-y2));
+			//g.setColor(Color.BLACK);
+		}
+		
+		
+		
+		if(startrobot==1)
+		{
+			x1 = p[k-1].x; y1 = p[k-1].y;
+			x2 = p[k].x; y2 = p[k].y;
+			if((x2-x1)!=0)
+			{
+			slope = (y2-y1)/(x2-x1);
+			deg= Math.atan(slope);
+			}
+			else
+			{
+				deg = 90;
+			}
+			xd = Math.sin(deg)*r.wid;
+			yd = Math.cos(deg)*r.wid;
+			
+			
+			x1 = r.x+Math.cos(deg)*(r.len/2); y1 = r.y+Math.sin(deg)*(r.len/2);
+			x2 = r.x-Math.cos(deg)*(r.len/2); y2 = r.y-Math.sin(deg)*(r.len/2);
+
+			
+			X1 = x1-xd; Y1 = y1+yd;
+			X2 = x2-xd; Y2 = y2+yd;
+				
+			X3 = x1+xd; Y3 = y1-yd;
+			X4 = x2+xd; Y4 = y2-yd;
+			
+			
+			g.drawLine((int)X1,(int)(600-Y1),(int)X2,(int)(600-Y2));
+			g.drawLine((int)X3,(int)(600-Y3),(int)X4,(int)(600-Y4));
+			g.drawLine((int)X1,(int)(600-Y1),(int)X3,(int)(600-Y3));
+			g.drawLine((int)X2,(int)(600-Y2),(int)X4,(int)(600-Y4));
+			
+			
+			
+			if(p[k-1].x<p[k].x)
+			{
+			r.x = r.x+Math.cos(deg)*(20);
+			r.y = r.y+Math.sin(deg)*(20);
+			}
+			
+			else if(p[k-1].x>p[k].x)
+			{
+				r.x = r.x-Math.cos(deg)*(20);
+				r.y = r.y-Math.sin(deg)*(20);
+			}
+			
+			
+			
+			try {Thread.sleep(500);}
+			catch (InterruptedException e) {e.printStackTrace();}
+			
+			dist1 = Math.pow((r.x-p[k-1].x),2)+Math.pow((r.y-p[k-1].y),2);
+    		dist1 = Math.pow(dist1,0.5);
+    		
+    		System.out.println("dist dist1 "+dist+"  "+dist1);
+    		if(dist1>dist)
+    		{
+    			k=k+1;
+    			r.x=p[k-1].x;
+        		r.y=p[k-1].y;
+        		dist = Math.pow((p[k-1].x-p[k].x),2)+Math.pow((p[k-1].y-p[k].y),2);
+        		dist = Math.pow(dist,0.5);
+        		
+    		}
+    		
+			if(k<=pointc)
+			{
+			repaint();
+			}
+			
+			
+		}
+		
+		
+		
+	}
+	
+	public void mouseDragged(MouseEvent arg0){}
+    public void mouseMoved(MouseEvent arg0) {}
+    public void mouseClicked(MouseEvent arg) 
+    {
+    	System.out.println("mouse clicked");
+    	
+    	if(start==1&&arg.getSource()!=b1)
+    	{
+    		int x;int y;
+    		pointc++;
+    		
+    		x = arg.getX();
+    		y = arg.getY();
+    		
+    		p[pointc].x = x;
+    		p[pointc].y = 600-y;
+    		
+    		if(pointc>1)
+    		{
+    			repaint();
+    		}
+    		
+    		
+    	}
+    	
+    	if(arg.getSource()==b)
+    	{
+    		System.out.println("b is press");
+    		start=1;
+    		pointc=0;
+    	}
+    	if(arg.getSource()==b1)
+    	{
+    		start=0;
+    		startrobot=1;
+    		k=2;
+    		r.len=80;
+    		r.wid=10;
+    		r.x=p[k-1].x;
+    		r.y=p[k-1].y;
+    		
+    		dist = Math.pow((p[k-1].x-p[k].x),2)+Math.pow((p[k-1].y-p[k].y),2);
+    		dist = Math.pow(dist,0.5);
+    		
+    		repaint();
+    	}
+    	
+    	
+    	
+    }
+    public void mouseEntered(MouseEvent arg0) {}
+    public void mouseExited(MouseEvent arg0) {}
+    public void mousePressed(MouseEvent arg0)  {}
+    public void mouseReleased(MouseEvent arg0) {}
+	
+}
+
+class point
+{
+	double x;double y;
+}
+
+class robot
+{
+	double x;double y;
+	double wid,len;
+	
+}
