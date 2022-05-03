@@ -1,0 +1,6 @@
+
+1. Run the Python code .Enter the deviation width value
+2. click the area for plotting the points
+3. line will be plotted for the points
+4. deviation width is plotted for the lines automatically
+5. Press 's' key to start the robot
